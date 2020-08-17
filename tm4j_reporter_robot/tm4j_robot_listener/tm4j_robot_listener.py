@@ -10,9 +10,11 @@ class TM4JRobotListener(object):
         self,
         tm4j_access_key,
         tm4j_project_key,
+        tm4j_test_cycle_name=f"Robot run {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
     ):
         self.tm4j_access_key = tm4j_access_key
         self.tm4j_project_key = tm4j_project_key
+        self.tm4j_test_cycle_name = tm4j_test_cycle_name
         self.tm4j_test_cycle_key = None
 
     def end_test(self, name: str, attributes: dict) -> None:
@@ -32,7 +34,7 @@ class TM4JRobotListener(object):
 
         if not self.tm4j_test_cycle_key:
             tm4j_api.configure_tm4j_api(api_access_key=self.tm4j_access_key, project_key=self.tm4j_project_key)
-            self.tm4j_test_cycle_key = tm4j_api.create_test_cycle(test_cycle_name="My TM4J test cycle")
+            self.tm4j_test_cycle_key = tm4j_api.create_test_cycle(test_cycle_name=self.tm4j_test_cycle_name)
 
         tm4j_api.create_test_execution_result(
             test_cycle_key=self.tm4j_test_cycle_key,

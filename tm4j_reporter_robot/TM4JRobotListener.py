@@ -1,11 +1,14 @@
 from datetime import datetime
 
-from tm4j_reporter_api import tm4j_api
+from tm4j_reporter_api.tm4j_api import tm4j_api
+from tm4j_reporter_api.tm4j_exceptions import tm4j_response_exceptions
 
 from tm4j_reporter_robot.tm4j_robot_helpers import tm4j_config_helpers
 
 
 class TM4JRobotListener(object):
+    ROBOT_LISTENER_API_VERSION = 2
+
     def __init__(
         self,
         tm4j_access_key,
@@ -36,13 +39,18 @@ class TM4JRobotListener(object):
             tm4j_api.configure_tm4j_api(api_access_key=self.tm4j_access_key, project_key=self.tm4j_project_key)
             self.tm4j_test_cycle_key = tm4j_api.create_test_cycle(test_cycle_name=self.tm4j_test_cycle_name)
 
-        tm4j_api.create_test_execution_result(
-            test_cycle_key=self.tm4j_test_cycle_key,
-            test_case_key=test_case_key,
-            execution_status=attributes["status"],
-            actual_end_date=datetime.utcfromtimestamp(attributes["endtime"]).strftime("%Y-%m-%d'T'%H:%M:%S'Z'"),
-            execution_time=attributes["elapsedtime"],
-            comment=attributes["message"],
-        )
+        try:
+            tm4j_api.create_test_execution_result(
+                test_cycle_key=self.tm4j_test_cycle_key,
+                test_case_key=test_case_key,
+                execution_status=attributes["status"],
+                actual_end_date=datetime.strptime(attributes["endtime"], "%Y%m%d %H:%M:%S.%f").strftime(
+                    "%Y-%m-%dT%H:%M:%SZ"
+                ),
+                execution_time=attributes["elapsedtime"],
+                comment=attributes["message"],
+            )
+        except tm4j_response_exceptions.TM4JResponseException as e:
+            print(f"Sorry, test execution reporting for {test_case_key} didn't go well because of: {e.message}")
 
         return None

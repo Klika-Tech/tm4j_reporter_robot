@@ -15,8 +15,8 @@ setuptools.setup(
     license="MIT",
     packages=["tm4j_reporter_robot.tm4j_robot_helpers", "tm4j_reporter_robot"],
     platforms="any",
-    python_requires=">=3.7",
-    install_requires=["robotframework", "tm4j-reporter-api"],
+    python_requires=">=3.6",
+    install_requires=["tm4j-reporter-api"],
     keywords="python tm4j jira test testmanagement report robotframework",
     classifiers=[
         "Intended Audience :: Developers",

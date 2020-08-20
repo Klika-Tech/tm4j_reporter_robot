@@ -13,7 +13,7 @@ setuptools.setup(
     author="Yury Kuptsou",
     author_email="ykuptsou@klika-tech.com",
     license="MIT",
-    packages=["tm4j_reporter_robot.tm4j_robot_helpers", "tm4j_reporter_robot.tm4j_robot_listener"],
+    packages=["tm4j_reporter_robot.tm4j_robot_helpers", "tm4j_reporter_robot"],
     platforms="any",
     python_requires=">=3.7",
     install_requires=["robotframework", "tm4j-reporter-api"],

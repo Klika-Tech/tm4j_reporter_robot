@@ -15,7 +15,7 @@ Package providing Robot Framework listener for TM4J Cloud integration.
 In order to use Robot Framework TM4J listener, it should be installed to the same PYTHONPATH as Robot Framework itself.
 While running Robot Framework, pass `TM4JRobotListener` as value for `--listener` argument, along with access and project keys:
 ```bash
-pybot --listener TM4JRobotListener:<tm4j_access_key>:<tm4j_project_key>:<tm4j_test_cycle_name> test.robot
+robot --listener tm4j_reporter_robot.TM4JRobotListener:<tm4j_access_key>:<tm4j_project_key>:<tm4j_test_cycle_name> test.robot
 ```
 | Param                | Mandatory | Description                                                                                                                                            | Type | Example       |
 |----------------------|-----------|--------------------------------------------------------------------------------------------------------------------------------------------------------|------|---------------|

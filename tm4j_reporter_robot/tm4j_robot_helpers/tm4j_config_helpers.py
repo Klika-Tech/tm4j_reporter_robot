@@ -1,4 +1,4 @@
-from tm4j_reporter_api import tm4j_configuration_exceptions
+from tm4j_reporter_api.tm4j_exceptions import tm4j_configuration_exceptions
 
 
 def get_tm4j_test_case_key(test_attributes: dict) -> str:

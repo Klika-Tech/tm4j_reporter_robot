@@ -7,6 +7,7 @@ from datetime import datetime
 from tm4j_reporter_api.tm4j_api import tm4j_api
 from tm4j_reporter_api.tm4j_exceptions import tm4j_response_exceptions
 
+from tm4j_reporter_robot import library_variables
 from tm4j_reporter_robot.tm4j_robot_helpers import tm4j_config_helpers
 
 
@@ -41,7 +42,9 @@ class TM4JRobotListener(object):
 
         if not self.tm4j_test_cycle_key:
             tm4j_api.configure_tm4j_api(api_access_key=self.tm4j_access_key, project_key=self.tm4j_project_key)
-            self.tm4j_test_cycle_key = tm4j_api.create_test_cycle(test_cycle_name=self.tm4j_test_cycle_name)
+            self.tm4j_test_cycle_key = tm4j_api.create_test_cycle(
+                test_cycle_name=self.tm4j_test_cycle_name, description=library_variables.TEST_CYCLE_DESCRIPTION
+            )
 
         try:
             tm4j_api.create_test_execution_result(

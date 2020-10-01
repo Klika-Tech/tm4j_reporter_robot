@@ -12,7 +12,7 @@ setuptools.setup(
     description="python package providing Robot Framework integration with Jira Test Management (tm4j) Cloud",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    version="v0.1.1",
+    version="v0.1.2",
     url="https://github.com/Klika-Tech/tm4j_reporter_robot",
     author="Klika-Tech, Inc",
     author_email="contact@klika-tech.com",

@@ -36,3 +36,21 @@ Raised by listener if test is not tagged with TM4J test case key:
 ```bash
 tm4j_reporter_api.tm4j_exceptions.tm4j_configuration_exceptions.TM4JConfigurationException: Test case key is not found in list of tags. Please mark robot test with tag 'TM4J:<test_case_key>'.
 ```
+
+# TM4J test cycle description keyword
+Library provides possibility to set TM4J test cycle description with special keyword `Set Tm4j Test Cycle Description`.
+
+## Usage
+Import library first, use keyword after:
+```robot
+*** Settings ***
+Library  tm4j_reporter_robot.TM4JCycleDescriptor
+Suite Setup  Setting Cycle Description
+
+
+*** Keywords ***
+Setting Cycle Description
+    Set Tm4j Test Cycle Description  My test cycle description
+```
+
+Keyword is in global scope, so only one instance is created during the whole test execution and it is shared by all test cases and test suites.

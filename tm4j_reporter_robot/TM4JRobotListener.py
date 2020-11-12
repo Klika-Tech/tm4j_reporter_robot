@@ -1,7 +1,8 @@
 # Copyright (C) 2020 Klika Tech, Inc. or its affiliates.  All Rights Reserved.
 # Use of this source code is governed by an MIT-style license that can be found in the LICENSE file
 # or at https://opensource.org/licenses/MIT.
-
+import multiprocessing
+import os
 from datetime import datetime
 
 from tm4j_reporter_api.tm4j_api import tm4j_api
@@ -41,10 +42,17 @@ class TM4JRobotListener(object):
         test_case_key = tm4j_config_helpers.get_tm4j_test_case_key(attributes)
 
         if not self.tm4j_test_cycle_key:
-            tm4j_api.configure_tm4j_api(api_access_key=self.tm4j_access_key, project_key=self.tm4j_project_key)
-            self.tm4j_test_cycle_key = tm4j_api.create_test_cycle(
-                test_cycle_name=self.tm4j_test_cycle_name, description=library_variables.TEST_CYCLE_DESCRIPTION
-            )
+            with multiprocessing.Lock:
+                if not os.path.exists("./TEST_CYCLE_KEY"):
+                    tm4j_api.configure_tm4j_api(api_access_key=self.tm4j_access_key, project_key=self.tm4j_project_key)
+                    self.tm4j_test_cycle_key = tm4j_api.create_test_cycle(
+                        test_cycle_name=self.tm4j_test_cycle_name, description=library_variables.TEST_CYCLE_DESCRIPTION
+                    )
+                    with open("./TEST_CYCLE_KEY", "w") as f:
+                        f.write(self.tm4j_test_cycle_key)
+                else:
+                    with open("./TEST_CYCLE_KEY", "r") as f:
+                        self.tm4j_test_cycle_key = f.read()
 
         try:
             tm4j_api.create_test_execution_result(

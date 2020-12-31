@@ -2,13 +2,14 @@
 # Use of this source code is governed by an MIT-style license that can be found in the LICENSE file
 # or at https://opensource.org/licenses/MIT.
 
+import tempfile
+
 from datetime import datetime
 
 from tm4j_reporter_api.tm4j_api import tm4j_api
 from tm4j_reporter_api.tm4j_exceptions import tm4j_response_exceptions
 
-from tm4j_reporter_robot import library_variables
-from tm4j_reporter_robot.tm4j_robot_helpers import tm4j_config_helpers
+from tm4j_reporter_robot.tm4j_robot_helpers import tm4j_config_helpers, tm4j_test_cycle_helpers
 
 
 class TM4JRobotListener(object):
@@ -18,10 +19,14 @@ class TM4JRobotListener(object):
         self,
         tm4j_access_key,
         tm4j_project_key,
-        tm4j_test_cycle_name=f"Robot run {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+        tm4j_parallel_execution_support=False,
+        tm4j_shared_test_cycle_key_file_path=f"{tempfile.gettempdir()}/TEST_CYCLE_KEY",
+        tm4j_test_cycle_name=f"Robot run {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
     ):
         self.tm4j_access_key = tm4j_access_key
         self.tm4j_project_key = tm4j_project_key
+        self.tm4j_parallel_execution_support = tm4j_parallel_execution_support
+        self.tm4j_shared_test_cycle_key_file_path = tm4j_shared_test_cycle_key_file_path
         self.tm4j_test_cycle_name = tm4j_test_cycle_name
         self.tm4j_test_cycle_key = None
 
@@ -40,13 +45,16 @@ class TM4JRobotListener(object):
         """
         test_case_key = tm4j_config_helpers.get_tm4j_test_case_key(attributes)
 
-        if not self.tm4j_test_cycle_key:
-            tm4j_api.configure_tm4j_api(api_access_key=self.tm4j_access_key, project_key=self.tm4j_project_key)
-            self.tm4j_test_cycle_key = tm4j_api.create_test_cycle(
-                test_cycle_name=self.tm4j_test_cycle_name, description=library_variables.TEST_CYCLE_DESCRIPTION
-            )
+        tm4j_api.configure_tm4j_api(api_access_key=self.tm4j_access_key, project_key=self.tm4j_project_key)
 
         try:
+            if not self.tm4j_test_cycle_key:
+                self.tm4j_test_cycle_key = tm4j_test_cycle_helpers.get_tm4j_test_cycle_key(
+                    parallel_execution=self.tm4j_parallel_execution_support,
+                    test_cycle_key_file_path=self.tm4j_shared_test_cycle_key_file_path,
+                    tm4j_test_cycle_name=self.tm4j_test_cycle_name
+                )
+
             tm4j_api.create_test_execution_result(
                 test_cycle_key=self.tm4j_test_cycle_key,
                 test_case_key=test_case_key,

@@ -12,20 +12,46 @@ Package providing Robot Framework listener for TM4J Cloud integration.
     pip install git+ssh://git@github.com:Klika-Tech/tm4j_reporter_robot.git
     
 # Usage
-In order to use Robot Framework TM4J listener, it should be installed to the same PYTHONPATH as Robot Framework itself.
+In order to use Robot Framework TM4J listener, it should be installed to the same PYTHONPATH as Robot Framework itself.<br>
+Listener requires arguments below to be passed:
+
+| Param                                 | Mandatory | Environment variable name            | Description                                                                                                                                            | Type     | Example                           |
+|---------------------------------------|-----------|--------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|----------|-----------------------------------|
+| tm4j_access_key                       | Yes       | TM4J_ACCESS_KEY                      | API key to access TM4j. To get it see [Instruction](https://support.smartbear.com/tm4j-cloud/docs/api-and-test-automation/generating-access-keys.html) | str      |                                   |
+| tm4j_project_key                      | Yes       | TM4J_PROJECT_KEY                     | Jira / TM4J project prefix without trailing dash                                                                                                       | str      | QT                                |
+| parallel_execution_flag               | No        | TM4J_PARALLEL_EXECUTION_SUPPORT      | Flag to mark parallel execution. False by default                                                                                                      | boolean  | true                              |
+| path_to_shared_test_cycle_key_file    | No        | TM4J_SHARED_TEST_CYCLE_KEY_FILE_PATH | Path to TM4J test cycle key shared file (used to handle parallel test execution). Deault value is `{os_tempdir}/TEST_CYCLE_KEY`                        | str      | /my_folder/my_test_cycle_key_file |
+| tm4j_test_cycle_name                  | No        | TM4J_TEST_CYCLE_NAME                 | TM4J test cycle name. If not passed, listener will create a new one test cycle with default name "Robot run YYYY-mm-DD HH-MM-SS"                       | str      | My test cycle                     |
+
+Listener will try to get attribute value from environment variables first, and if attribute is not set as environment variable - will look up to command line parameter.
+
+## Passing attributes from environment
+You can set all or required only attributes as environment variables, so no need to pass them into command line:
+```bash
+export TM4J_ACCESS_KEY=<my_access_key>
+export TM4J_PROJECT_KEY=QT
+```
+With that you can pass only non-required attributes to customize your test run:
+```bash
+pabot --processes 4 --listener tm4j_reporter_robot.TM4JRobotListener:::true:/my_user/temp/my_tc_key:"My custom test cycle name" tests/
+```
+If needed, you can set all arguments as environment variables, so command line will be simply short:
+```bash
+# setting the rest of variables
+export TM4J_PARALLEL_EXECUTION_SUPPORT=true
+export TM4J_SHARED_TEST_CYCLE_KEY_FILE_PATH=/my_user/temp/my_tc_key
+export TM4J_TEST_CYCLE_NAME="My custom test cycle name"
+# running tests
+pabot --processes 4 --listener tm4j_reporter_robot.TM4JRobotListener tests/
+```
+
+## Passing attributes from command line
 While running Robot Framework, pass `TM4JRobotListener` as value for `--listener` argument, along with access and project keys:
 ```bash
 robot --listener tm4j_reporter_robot.TM4JRobotListener:<tm4j_access_key>:<tm4j_project_key>:<parallel_execution_flag>:<path_to_shared_test_cycle_key_file>:<tm4j_test_cycle_name> test.robot
 ```
-| Param                                 | Mandatory | Description                                                                                                                                            | Type     | Example                           |
-|---------------------------------------|-----------|--------------------------------------------------------------------------------------------------------------------------------------------------------|----------|-----------------------------------|
-| tm4j_access_key                       | Yes       | API key to access TM4j. To get it see [Instruction](https://support.smartbear.com/tm4j-cloud/docs/api-and-test-automation/generating-access-keys.html) | str      |                                   |
-| tm4j_project_key                      | Yes       | Jira / TM4J project prefix without trailing dash                                                                                                       | str      | QT                                |
-| parallel_execution_flag               | No        | Flag to mark parallel execution. False by default                                                                                                      | boolean  | true                              |
-| path_to_shared_test_cycle_key_file    | No        | Path to TM4J test cycle key shared file (used to handle parallel test execution). Deault value is `{os_tempdir}/TEST_CYCLE_KEY`                        | str      | /my_folder/my_test_cycle_key_file |
-| tm4j_test_cycle_name                  | No        | TM4J test cycle name. If not passed, listener will create a new one test cycle with default name "Robot run YYYY-mm-DD HH-MM-SS"                       | str      | My test cycle                     |
 
-**Example:** running without parallel exectution with custom test cycle name
+**Example:** running without parallel execution with custom test cycle name
 ```bash
 robot --listener tm4j_reporter_robot.TM4JRobotListener:my_access_key:QT:::"My custom test cycle name" test.robot
 ```
@@ -36,6 +62,7 @@ rm -rf /my_user/temp/my_tc_key*
 pabot --processes 4 --listener tm4j_reporter_robot.TM4JRobotListener:my_access_key:QT:true:/my_user/temp/my_tc_key:"My custom test cycle name" tests/
 ```
 
+## Tests preparation
 In order to listener reported test execution to TM4J, mark Robot test case with tag `TM4J:<tm4j_test_case_key>`:
 ```robot
 My Robot Test Case

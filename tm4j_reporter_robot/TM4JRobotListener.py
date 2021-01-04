@@ -2,6 +2,7 @@
 # Use of this source code is governed by an MIT-style license that can be found in the LICENSE file
 # or at https://opensource.org/licenses/MIT.
 
+import os
 import tempfile
 
 from datetime import datetime
@@ -17,17 +18,21 @@ class TM4JRobotListener(object):
 
     def __init__(
         self,
-        tm4j_access_key,
-        tm4j_project_key,
+        tm4j_access_key=None,
+        tm4j_project_key=None,
         tm4j_parallel_execution_support=False,
         tm4j_shared_test_cycle_key_file_path=f"{tempfile.gettempdir()}/TEST_CYCLE_KEY",
         tm4j_test_cycle_name=f"Robot run {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
     ):
-        self.tm4j_access_key = tm4j_access_key
-        self.tm4j_project_key = tm4j_project_key
-        self.tm4j_parallel_execution_support = tm4j_parallel_execution_support
-        self.tm4j_shared_test_cycle_key_file_path = tm4j_shared_test_cycle_key_file_path
-        self.tm4j_test_cycle_name = tm4j_test_cycle_name
+        self.tm4j_access_key = os.environ.get("TM4J_ACCESS_KEY", tm4j_access_key)
+        self.tm4j_project_key = os.environ.get("TM4J_PROJECT_KEY", tm4j_project_key)
+        self.tm4j_parallel_execution_support = os.environ.get(
+            "TM4J_PARALLEL_EXECUTION_SUPPORT", tm4j_parallel_execution_support
+        )
+        self.tm4j_shared_test_cycle_key_file_path = os.environ.get(
+            "TM4J_SHARED_TEST_CYCLE_KEY_FILE_PATH", tm4j_shared_test_cycle_key_file_path
+        )
+        self.tm4j_test_cycle_name = os.environ.get("TM4J_TEST_CYCLE_NAME", tm4j_test_cycle_name)
         self.tm4j_test_cycle_key = None
 
     def end_test(self, name: str, attributes: dict) -> None:
